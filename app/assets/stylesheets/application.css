@@ -13,3 +13,10 @@
  *= require_tree .
  *= require_self
  */
+table#movies hilite {
+    background-color: yellow;
+    
+}
+table#movies th {
+    text-decoration: underline;
+}
