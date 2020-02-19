@@ -12,6 +12,7 @@ class MoviesController < ApplicationController
 
   def index
     
+    # get list of all ratings, then list of all checked ratings
     @all_ratings = Movie.order(:rating).select(:rating).map(&:rating).uniq
     @selected_ratings = checkSelected
     @selected_ratings.each do |rating|
@@ -62,6 +63,7 @@ class MoviesController < ApplicationController
   end
   
   def checkSelected
+    #if no ratings, check if the session has old ratings, otherwise return all
     if params[:ratings]
       session[:ratings] = params[:ratings]
       return params[:ratings].keys
