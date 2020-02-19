@@ -11,11 +11,20 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if params[:sort]
-        @movies = Movie.order(params[:sort])
-      else
-        @movies = Movie.all
+    @all_ratings = Movie.order(:rating).select(:rating).map(&:rating).uniq
+    @selected_ratings = checkSelected
+    
+    
+    @selected_ratings.each do |rating|
+      params[rating] = true
     end
+    
+    if params[:sort]
+        @movies = Movie.order(params[:sort]).where(:rating => @selected_ratings)
+      else
+        @movies = Movie.where(:rating => @selected_ratings)
+    end
+    
   end
 
   def new
@@ -45,5 +54,14 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
+  
+  def checkSelected
+    if params[:ratings]
+      return params[:ratings].keys
+    else
+      return @all_ratings
+    end
+  end
+  
 
 end
