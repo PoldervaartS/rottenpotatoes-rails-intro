@@ -11,16 +11,22 @@ class MoviesController < ApplicationController
   end
 
   def index
+    
     @all_ratings = Movie.order(:rating).select(:rating).map(&:rating).uniq
     @selected_ratings = checkSelected
-    
-    
     @selected_ratings.each do |rating|
       params[rating] = true
     end
     
+    # if no parameters for sorting use the session
+    if (not params[:sort]) and session[:sort]
+      params[:sort] = session[:sort]
+    end
+    
+    
     if params[:sort]
         @movies = Movie.order(params[:sort]).where(:rating => @selected_ratings)
+        session[:sort] = params[:sort]
       else
         @movies = Movie.where(:rating => @selected_ratings)
     end
@@ -57,8 +63,12 @@ class MoviesController < ApplicationController
   
   def checkSelected
     if params[:ratings]
+      session[:ratings] = params[:ratings]
       return params[:ratings].keys
     else
+      if session[:ratings]
+        return session[:ratings].keys
+      end
       return @all_ratings
     end
   end
